@@ -22,7 +22,7 @@ class _SplashFuturePageState extends State<SplashFuturePage> {
   @override
   Widget build(BuildContext context) {
     return EasySplashScreen(
-      logo: Image.network('https://raw.githubusercontent.com/j6c-001/get_tough/master/title.png'),
+      logo: Image.network('https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Fairbairn-Sykes_knife.svg/1200px-Fairbairn-Sykes_knife.svg.png'),
       title: const Text(
         "Get Tough",
         style: TextStyle(
