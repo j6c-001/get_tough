@@ -14,7 +14,7 @@ class GameDataManager {
   GameDataManager._internal();
 
   final devServiceUrl = Uri.parse('http://localhost:8080');
-  final serviceUrl = Uri.parse('https://topaz-ss-service-itgz7nbaxa-nn.a.run.app');
+  final serviceUrl = Uri.parse('https://xxx.a.run.app');
   final sourceId = '164uGdxvwAcfLTA26joxzkzLPPVZ8UF3yqTqFxxId1CY';
 
   Future load() async {
