@@ -18,4 +18,20 @@ class PlacesManager {
     });
 
   }
+
+  List<int> getPath(int id) {
+    List<int> path= [];
+    int currentId = id;
+    while (true) {
+      currentId = places[currentId]!.parentId;
+      if(currentId != 0) {
+        path.add(currentId);
+      } else {
+        break;
+      }
+    }
+    return path;
+  }
+
+
 }

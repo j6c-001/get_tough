@@ -8,5 +8,9 @@ const S = 4;
 const SW = 5;
 const W =6;
 const NW = 7;
+const UP = 8;
+const DOWN = 9;
 
-const directionText = ['North', 'North East', 'East', 'South East', 'South', 'South West', 'West', 'North West'];
+const directionText = ['North', 'North East', 'East', 'South East', 'South', 'South West', 'West', 'North West', 'Up', 'Down'];
+
+int getDirectionIndex(String direction) => directionText.indexOf(direction);
