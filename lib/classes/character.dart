@@ -2,6 +2,9 @@ import 'package:get_tough/classes/item_or_character.dart';
 import 'package:get_tough/managers/location_manager.dart';
 import 'package:get_tough/utils/hash.dart';
 
+import '../managers/items_manager.dart';
+import 'item.dart';
+
 class Character {
    Character({
     required this.id,
@@ -31,4 +34,6 @@ class Character {
       defaultPlaceId: idHash(json['Starting Place Id'])
     );
   }
+
+  List<Item> get inventory => ItemsManager().items.values.where((item)=> LocationManager().locations[item.id]!.locationId == id ).toList();
 }

@@ -12,7 +12,7 @@ class LocationManager {
   Map<int, ItemOrCharacterLocation> locations = {};
 
 
-  void modeTo(int id, int locationid) {
+  void moveTo(int id, int locationid) {
     locations[id] = ItemOrCharacterLocation(id, locationid);
   }
 

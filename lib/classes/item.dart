@@ -7,7 +7,10 @@ class Item {
     required this.id,
     required this.name,
     required this.longDescription,
-    required this.defaultPlaceId
+    required this.inventoryDescription,
+    required this.defaultPlaceId,
+    required this.indefiniteArticle,
+    required this.isImmovable
   }) {
     LocationManager().locations[id] = ItemOrCharacterLocation(id, defaultPlaceId);
   }
@@ -15,17 +18,26 @@ class Item {
   final int id;
   final String name;
   final String longDescription;
+  final String inventoryDescription;
   final int defaultPlaceId;
+  final String indefiniteArticle;
+  final bool isImmovable;
+
+  String get descriptionWhenInInventory =>  inventoryDescription.isEmpty ? longDescription : inventoryDescription;
 
   @override
   String toString() => 'Item(id: $id, name: $name)';
+  String get nameWithArticle => '$indefiniteArticle $name';
 
   static fromJson(Map<String, dynamic> json) {
     return Item(
       id: idHash(json['Id']),
       name: json['Name'] ,
       longDescription: json['Long Description'],
-      defaultPlaceId: idHash(json['Starting Place Id'])
+      inventoryDescription: json['Inventory Description'],
+      indefiniteArticle: json['Indefinite Article'],
+      defaultPlaceId: idHash(json['Starting Place Id']),
+      isImmovable: json['Immovable'].toString().toLowerCase().startsWith('y')
     );
   }
 }

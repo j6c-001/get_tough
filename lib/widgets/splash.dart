@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:easy_splash_screen/easy_splash_screen.dart';
-import 'package:get_tough/managers/game_data_manager.dart';
-import '../main.dart';
 import 'package:flutter/material.dart';
+import 'package:get_tough/managers/game_data_manager.dart';
+
+import '../main.dart';
 
 class SplashFuturePage extends StatefulWidget {
   const SplashFuturePage({Key? key}) : super(key: key);

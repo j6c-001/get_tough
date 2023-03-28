@@ -1,9 +1,12 @@
 
+import 'package:get_tough/managers/character_manager.dart';
 import 'package:get_tough/managers/items_manager.dart';
 import 'package:get_tough/managers/location_manager.dart';
 import 'package:get_tough/managers/places_manager.dart';
 import 'package:get_tough/utils/hash.dart';
+
 import '../utils/directions.dart';
+import 'character.dart';
 import 'item.dart';
 
 
@@ -13,6 +16,7 @@ class Place {
     required this.id,
     required this.shortDescription,
     required this.longDescription,
+    required this.surfaceDescription,
     required this.exits,
     required this.parentId
   });
@@ -21,6 +25,7 @@ class Place {
   final int parentId;
   final String shortDescription;
   final String longDescription;
+  final String surfaceDescription;
   final List<int> exits;
 
   @override
@@ -38,6 +43,7 @@ class Place {
       id: idHash(json['Id']),
       shortDescription: json['Short Description'] ,
       longDescription: json['Long Description'],
+      surfaceDescription: json['Surface Description'],
       exits: exits,
       parentId: idHash(json['Within Id'])
     );
@@ -45,7 +51,8 @@ class Place {
   }
 
   String get pathName => PlacesManager().getPath(id).map((e) => PlacesManager().places[e]!.shortDescription).join(', ');
-  List<Item> get visibleItems => ItemsManager().items.values.where((item)=> LocationManager().locations[item.id]!.locationId == id ).toList();
+  List<Item> get itemsHere => ItemsManager().items.values.where((item)=> LocationManager().locations[item.id]!.locationId == id ).toList();
+  List<Character> get charactersHere => CharacterManager().characters.values.where((character) =>  LocationManager().locations[character.id]!.locationId == id ).toList();
 
 
 }
