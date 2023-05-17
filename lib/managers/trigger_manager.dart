@@ -17,7 +17,11 @@ class TriggerManager {
   }
 
   List<Trigger> find(CommandType action, int itemOrCharacterId, int targetId ){
-      return triggers.where((it)=>it.action == action && (it.targetItemId == itemOrCharacterId || it.targetCharacterId == itemOrCharacterId) && it.toolItemId == targetId).toList();
+      return triggers.where((it)=>it.action == action && (
+           it.targetItemId == itemOrCharacterId
+          || it.targetCharacterId == itemOrCharacterId
+          || it.targetItemId == 0 && it.targetCharacterId  == 0
+      ) && it.toolItemId == targetId).toList();
   }
 
 }

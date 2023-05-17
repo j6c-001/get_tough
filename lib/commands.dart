@@ -1,5 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
+import 'package:get_tough/classes/character.dart';
 import 'package:get_tough/classes/character_controller.dart';
 import 'package:get_tough/managers/character_manager.dart';
 import 'package:get_tough/managers/items_manager.dart';
@@ -7,7 +8,7 @@ import 'package:get_tough/managers/items_manager.dart';
 import 'classes/item.dart';
 import 'utils/directions.dart';
 
-enum CommandType {MOVE, GET, DROP, LOOK, EXAMINE, INVENTORY, UNLOCK, LOCK, GIVE, THROW, DRINK, EAT, NONE }
+enum CommandType {NONE, MOVE, GET, DROP, LOOK, EXAMINE, INVENTORY, UNLOCK, LOCK, GIVE, THROW, DRINK, EAT, READ, FIGHT}
 
 class  CommandBase {
 
@@ -28,9 +29,6 @@ class  CommandBase {
   }
 
   String get text => verb + (nounId != null ? ' ${getLabel(nounId!)} ${preposition ?? ''}${noun2Id != null ? ' ${getLabel(noun2Id!)}' : ''}' : '');
-
-
-
 
 }
 
@@ -120,7 +118,27 @@ class CommandInventoryItems extends Command {
 
 
 
-  class CommandStack {
+class CommandWithCharacters extends Command {
+  CommandWithCharacters(CommandType type, String verb, {int? nounId})
+      : super(type, verb, nounId: nounId);
+
+  @override
+  bool get isBuilt => super.isBuilt && nounId != null && nounId != 0;
+
+  @override
+  List<CommandBase> getSubCommands(CharacterController cc, {int? nounId}) {
+    return cc.currentPlace.charactersHere.map<CommandWithCharacters>((Character it) =>
+        CommandWithCharacters(type, verb, nounId: it.id)).toList();
+  }
+
+  @override
+  String get label =>
+      nounId != null ? CharacterManager().characters[nounId]!.name : super.label;
+
+}
+
+
+class CommandStack {
   final CharacterController characterController;
   CommandStack(this.characterController);
   List<List<CommandBase>> stack = [[
@@ -136,19 +154,27 @@ class CommandInventoryItems extends Command {
     CommandVisibleItems(CommandType.EXAMINE, 'Examine'),
     CommandVisibleItems(CommandType.GET, 'Get'),
     CommandInventoryItems(CommandType.DROP, 'Drop'),
+    CommandInventoryItems(CommandType.READ, 'Read'),
     Command(CommandType.INVENTORY, 'Inventory'),
+    CommandWithCharacters(CommandType.FIGHT, 'Fight'),
   ]];
 
+  List<CommandBase?> undoStack = [null];
+
+
   List<CommandBase> get commands => stack.last;
+  CommandBase? get undo => undoStack.last;
 
   get depth => stack.length;
 
-  void push(List<CommandBase> commands) {
+  void push(List<CommandBase> commands, lastCmd) {
     stack.add(commands);
+    undoStack.add(lastCmd);
   }
 
   void pop() {
     stack.removeLast();
+    undoStack.removeLast();
   }
 
   void reset() {

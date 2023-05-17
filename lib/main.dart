@@ -5,7 +5,9 @@ import 'package:get_tough/classes/character_controller.dart';
 import 'package:get_tough/commands.dart';
 import 'package:get_tough/managers/character_manager.dart';
 import 'package:get_tough/widgets/splash.dart';
+import 'package:get_tough/widgets/cursor.dart';
 
+import 'classes/tape.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -20,7 +22,7 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
   };
 }
 
-List<String> tape = ['Welcome to Get Tough, a Topaz adventure in the Fairbairn Sykes Universe', '>'];
+Tape tape= Tape(['Welcome to Get Tough, a Topaz adventure in the Fairbairn Sykes Universe']);
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -47,13 +49,19 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MyHomePage> createState() {
+    var state =  _MyHomePageState();
+    tape.state = state;
+    return state;
+  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  CharacterController get cc => cmdStack.characterController;
-  List<CommandBase> get commands => cmdStack.commands;
-  final CommandStack cmdStack  = CommandStack(CharacterController(character: CharacterManager().you));
+  CommandBase? lastSelection;
+
+  CharacterController get cc => cmdOptions.characterController;
+  List<CommandBase> get commands => cmdOptions.commands;
+  final CommandStack cmdOptions  = CommandStack(CharacterController(character: CharacterManager().you));
 
   final _scrollController = ScrollController();
   scrollToBottom() {
@@ -85,7 +93,18 @@ class _MyHomePageState extends State<MyHomePage> {
         itemBuilder:
           (context, index) {
             if(index > 0) {
-              return Text(tape[tape.length - index]);
+              final out = tape.at(index);
+              switch(out.type) {
+                case EntryType.NONE:
+                  break;
+                case EntryType.RESPONSE:
+                  return Text(out.text);
+                case EntryType.COMMAND:
+                  return Row(children: [Text('>${out.text}'), index == 1 ? const Cursor() : const Text('')]);
+                default:
+                  break;
+
+              }
             } else {
               return Container(
                 height: 50,
@@ -94,31 +113,38 @@ class _MyHomePageState extends State<MyHomePage> {
                   padding: const EdgeInsets.only(left:10, right: 10),
                   child: ListView(
 
+
+                    
+
                     scrollDirection: Axis.horizontal,
                       children: [
-                        Visibility(visible: cmdStack.depth > 1, child:IconButton( icon: const Icon(Icons.backspace), onPressed: () {
+                        Visibility(visible: cmdOptions.depth > 1, child:IconButton( icon: const Icon(Icons.backspace), onPressed: () {
                           setState(() {
-                            cmdStack.pop();
+                            cmdOptions.pop();
+                            final undo = cmdOptions.undo;
+                            tape.undoCommand(undo == null ? '' : undo.text);
                           });
                         }, )),
                         ...commands.map((it)=> ActionChip(
                         onPressed: () {
-                          setState(() {
-                            tape.last = '>${it.text}';
+                            tape.buildCommand(it.text);
                             if(it.isBuilt) {
                               cc.process(it);
-                              cmdStack.reset();
+                              cmdOptions.reset();
                             } else {
                               final sc = it.getSubCommands(cc, nounId: it.nounId);
                               if (sc.isEmpty) {
-                                tape.add('>${it.verb} the void.');
-                                tape.add('The void is too abstract to ${it.label}. ');
+                                tape.buildCommand('...?');
+                                tape.commitCommand();
+                                tape.addResponse('There are no options to ${it.verb}! Do you mean ${it.verb} ${it.label} to the void?');
+                                tape.addResponse('That\'s a little too abstract.');
+                                tape.addCmdPrompt();
+                                cmdOptions.reset();
                               } else {
-                                cmdStack.push(sc);
+                                cmdOptions.push(sc, it);
                               }
                             }
                             scrollToBottom();
-                          });
                         },
                         backgroundColor: const Color.fromARGB(255, 113, 134, 107),
                         shadowColor: Colors.grey[60],
@@ -132,6 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               );
             }
+            return null;
           }
     )
     );

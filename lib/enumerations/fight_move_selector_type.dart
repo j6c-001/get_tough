@@ -1,0 +1,7 @@
+enum EFightMoveSelectorType {
+  RANDOM,
+  DAMAGE,
+  SUCCESS,
+  EXPECTED_DAMAGE,
+  COST_BALANCED
+}

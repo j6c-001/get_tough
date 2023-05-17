@@ -1,10 +1,16 @@
 
 import 'package:get_tough/commands.dart';
 import 'package:get_tough/managers/conditions_manager.dart';
+import 'package:get_tough/utils/enums.dart';
 import 'package:get_tough/utils/hash.dart';
 
 import 'condition.dart';
 
+
+enum ETriggerDoWhat {
+  SET_STATE,
+  ADD_FIGHT_PROFILE
+}
 
 class Trigger {
   const Trigger({
@@ -15,7 +21,9 @@ class Trigger {
     required this.conditionId,
     required this.newValue,
     required this.description,
-    required this.noChangeDescription
+    required this.noChangeDescription,
+    required this.doWhat,
+    required this.doWhatThingId
   });
 
   final CommandType action;
@@ -24,20 +32,24 @@ class Trigger {
   final int targetCharacterId;
   final int conditionId;
   final int newValue;
+  final ETriggerDoWhat doWhat;
+  final int doWhatThingId;
   final String description;
   final String noChangeDescription;
 
   @override
-  String toString() => 'Trigger(action: $action  toolId: $toolItemId)';
+  String toString() => 'Trigger(action: $action  toolId: $toolItemId, doWhat $doWhat)';
 
   static Trigger fromJson(Map<String, dynamic> json) {
     return Trigger(
-     action: getAction(json['Action']),
+     action: getEnum<CommandType>(CommandType.values, json['Action']),
      toolItemId: idHash(json['Tool Item Id']),
      targetItemId: idHash(json['Target Item Id']),
      targetCharacterId: idHash(json['Target Character Id']),
      conditionId: idHash(json['Condition Id']),
      newValue: int.tryParse(json['New Value']) ?? 0,
+     doWhat: getEnum<ETriggerDoWhat>(ETriggerDoWhat.values, json['Do What']),
+     doWhatThingId: idHash(json['Do What Thing']),
      description: json['Description'],
      noChangeDescription: json['No Change Description']
     );

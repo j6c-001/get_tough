@@ -1,0 +1,22 @@
+
+enum ETarget {
+  NONE,
+  LARYNX,
+  BACK_OF_NECK,
+  BASE_OF_SPINE,
+  BICEPS,
+  CHIN,
+  FOOT,
+  HEAD,
+  KNEE,
+  KIDNEY,
+  LEGS,
+  SIDE_OF_NECK,
+  SOLARPLEXUS,
+  STOMATCH,
+  TESTICLES,
+  UPPER_SHIN,
+  WRIST,
+  BODY,
+  JAW
+}
